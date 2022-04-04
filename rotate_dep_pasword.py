@@ -2,7 +2,6 @@
 
 import sys
 import requests
-import json
 
 if len(sys.argv) != 2:
 	print("usage: rotate_dep_password.py <deviceID>")

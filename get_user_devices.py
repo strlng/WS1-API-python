@@ -41,7 +41,7 @@ header = {
 request_url = "{}/api/mdm/devices/search?user={}".format(SERVER, USER_ID)
 
 response = requests.get(request_url, headers=header)
-#print("status_code: {}".format(str(response.status_code)))
+print("status_code: {}".format(str(response.status_code)))
 api_response = response.json()
 
 # print the result all pretty like

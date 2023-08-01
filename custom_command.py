@@ -6,12 +6,14 @@ import requests
 import json
 
 # create argument parser
-parser = argparse.ArgumentParser(description='Run EnableRemoteDesktop on found MDM devices.')
-parser.add_argument('-f', '--searchField', default="DeviceFriendlyName", help='MDM search field. Defaults to DeviceFriendlyName')
+parser = argparse.ArgumentParser(description='Execute the named command on found MDM devices.')
+parser.add_argument('-c', '--command', help='MDM command to run. Current options: DeviceWipe, EnableRemoteDesktop')
+parser.add_argument('-f', '--searchField', default="DeviceFriendlyName", help='MDM search field. Defaults to DeviceFriendlyName. Other potentially useful search fields: MacAddress, SerialNumber, HostName')
 parser.add_argument('searchValue', help='MDM search value.')
 
 args = parser.parse_args()
 
+COMMAND = args.command
 SEARCH_VALUE = args.searchValue
 SEARCH_FIELD = args.searchField
 
@@ -59,7 +61,7 @@ def find_devices(access_token, server, search_field, search_value):
 
 devices = find_devices(access_token, secrets["server"], SEARCH_FIELD, SEARCH_VALUE)
 
-print("The enableRemoteDesktop command will be sent to the following devices:")
+print("The {} command will be sent to the following devices:".format(COMMAND))
 print(', '.join([x["devicefriendlyname"] for x in devices if "devicefriendlyname" in x]))
 print()
 
@@ -68,26 +70,36 @@ if answer.upper() in ["Y", "YES"]:
 	device_id_list = [x["deviceid"] for x in devices if "deviceid" in x]
 	request_url = "{}/api/mdm/devices/commands".format(secrets["server"])
 	for device in devices:
+		if COMMAND == "DeviceWipe":
+			execute_command = "CustomMdmCommand"
+			bodyJSON = bodyJSON = {
+				"CommandXML": "<dict><key>RequestType</key><string>EraseDevice</string></dict>"
+			}
+		elif COMMAND == "EnableRemoteDesktop":
+			execute_command = "CustomMdmCommand"
+			bodyJSON = {
+				"CommandXML": "<dict><key>RequestType</key><string>EnableRemoteDesktop</string></dict>"
+			}
+		
 		paramaters = {
 			"searchby": "deviceID",
 			"id": device["deviceid"],
-			"command": "CustomMdmCommand"
+			"command": execute_command
 		}
 		header = {
 			"Authorization": "Bearer {}".format(access_token),
 			"Accept": "application/json;version=2",
 			"Content-Type": "application/json"
 		}
-		bodyJSON = {
-			"CommandXML": "<dict><key>RequestType</key><string>EnableRemoteDesktop</string></dict>"
-		}
+		
 		response = requests.post(request_url, params=paramaters, json=bodyJSON, headers=header)
 		requestObject = response.request
 		#print("status_code: {}".format(str(response.status_code)))
 		if response.status_code == 202:
 			print("{} success!".format(device["devicefriendlyname"]))
-		#api_response = response.json()
-		#print(api_response)
+		else:
+			api_response = response.json()
+			print(api_response)
 if answer.upper() in ["N", "NO"]:
 	print("no")
 

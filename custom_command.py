@@ -7,7 +7,7 @@ import json
 
 # create argument parser
 parser = argparse.ArgumentParser(description='Execute the named command on found MDM devices.')
-parser.add_argument('-c', '--command', help='MDM command to run. Current options: DeviceWipe, EnableRemoteDesktop')
+parser.add_argument('-c', '--command', help='MDM command to run. Current options: DeviceWipe, EnableRemoteDesktop, DisableRemoteDesktop')
 parser.add_argument('-f', '--searchField', default="DeviceFriendlyName", help='MDM search field. Defaults to DeviceFriendlyName. Other potentially useful search fields: MacAddress, SerialNumber, HostName')
 parser.add_argument('searchValue', help='MDM search value.')
 
@@ -80,6 +80,11 @@ if answer.upper() in ["Y", "YES"]:
 			bodyJSON = {
 				"CommandXML": "<dict><key>RequestType</key><string>EnableRemoteDesktop</string></dict>"
 			}
+		elif COMMAND == "DisableRemoteDesktop":
+			execute_command = "CustomMdmCommand"
+			bodyJSON = {
+				"CommandXML": "<dict><key>RequestType</key><string>DisableRemoteDesktop</string></dict>"
+				}
 		
 		paramaters = {
 			"searchby": "deviceID",

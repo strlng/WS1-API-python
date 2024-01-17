@@ -39,7 +39,7 @@ header = {
 }
 
 request_url = "{}/api/mdm/devices/search?user={}".format(SERVER, USER_ID)
-
+print(request_url)
 response = requests.get(request_url, headers=header)
 print("status_code: {}".format(str(response.status_code)))
 api_response = response.json()
@@ -48,5 +48,6 @@ api_response = response.json()
 #print(json.dumps(api_response, sort_keys=True, indent=4))
 
 for device in api_response["Devices"]:
+	print(json.dumps(device, sort_keys=True, indent=4))
 	print("Device Namne: {}".format(device["DeviceFriendlyName"]))
 	print("Device ID: {}".format(device["Id"]["Value"]))

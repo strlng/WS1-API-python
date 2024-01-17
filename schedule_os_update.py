@@ -45,7 +45,7 @@ def find_devices(access_token, server, search_field, search_value):
 		"Accept": "application/json;version=2",
 		"Content-Type": "application/json"
 	}
-	
+		
 	request_url = "{}/api/mdm/devices/search".format(server)
 	
 	response = requests.get(request_url, headers=header)
@@ -70,7 +70,7 @@ if answer.upper() in ["Y", "YES"]:
 	device_id_list = [x["deviceid"] for x in devices if "deviceid" in x]
 	request_url = "{}/api/mdm/devices/commands/bulk/scheduleosupdate".format(secrets["server"])
 	data = {"BulkValues": {"Value": device_id_list}}
-	paramaters = {
+	parameters = {
 		"searchby": "deviceID",
 		"installaction": INSTALL_ACTION
 	}
@@ -79,7 +79,7 @@ if answer.upper() in ["Y", "YES"]:
 		"Accept": "application/json;version=2",
 		"Content-Type": "application/json"
 	}
-	response = requests.post(request_url, json=data, params=paramaters, headers=header)
+	response = requests.post(request_url, json=data, params=parameters, headers=header)
 	print("status_code: {}".format(str(response.status_code)))
 	api_response = response.json()
 	print(api_response)

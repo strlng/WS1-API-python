@@ -55,6 +55,7 @@ def find_devices(access_token, server, search_field, search_value):
 		device_list = []
 		for device in sorted(api_response, key = lambda i: i['DeviceFriendlyName']):
 			device_list.append({"deviceid": str(device["Id"]["Value"]), "devicefriendlyname": device["DeviceFriendlyName"]})
+		print(device_list)
 		return device_list
 	else:
 		return False
